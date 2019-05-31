@@ -1,0 +1,172 @@
+<!-- ExMobi UIXML(XHTML)文件 -->
+<html>
+	<head>
+		<meta content="charset=utf-8"/>
+		<title show="false"/>
+		<link rel="stylesheet" type="text/css" href="res:css/global.css" />
+		<script src="res:script/exmobijs/app.js"/>
+		<script src="res:script/exmobijs/base.js"/>
+        <script src="res:script/exmobijs/utility.js"/>
+        <script src="res:script/exmobijs/date.js"/>
+
+        <style type="text/css">
+			.own_departin{
+				background-color:"#fff";
+			}
+		</style>
+		<script>
+		<![CDATA[
+			function timeStamp2String(){  
+			    var datetime = new Date();  
+			    var year = datetime.getFullYear();  
+			    var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;  
+			    var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();  
+			    return year + "/" + month + "/" + date; 
+	    	}  
+			function oninit(){
+				var userFullCode = window.getStringSession("userFullCode");
+				$("user_code").val(userFullCode);
+				var user_code=$("user_code").val();
+				var data="";
+				window.userFullCode=userFullCode;
+				data="user_code=" +user_code
+				   	  +"&flag=" +"one";
+				$a.go("http://10.40.121.69:9999/outconnect/addServlet", "post", data, one_success, one_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+			}
+			function one_success(data){
+				var json = eval("("+data.responseText+")");
+				var innerHtml="";
+				for(i=0;i<json.length;i++){
+				innerHtml +="<option onclick='two()' value='"+i+"'>"+json[i].own_depart+"</option>";
+				document.getElementById("own_depart").innerHTML=innerHtml;
+				}
+			}
+			function one_fail(data){
+				alert("服务器错误");
+			}
+			function two(){
+				var own_depart=document.getElementById("own_depart");
+				var own_departvalue=own_depart.options[own_depart.selectedIndex].text;
+				data="own_depart=" +own_departvalue
+				   	  +"&flag=" +"two";
+				$a.go("http://10.40.121.69:9999/outconnect/addServlet", "post", data, two_success, two_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+			}
+			function two_success(data){
+				var json = eval("("+data.responseText+")");
+				var innerHtml="";
+				for(i=0;i<json.length;i++){
+				innerHtml +="<option  value='"+i+"'>"+json[i].out_depart+"</option>";
+				document.getElementById("out_depart").innerHTML=innerHtml;
+				}
+			}
+			function two_fail(data){
+				alert("服务器错误");
+			}
+			function three(){
+				var progressbarObj=new ProgressBar();
+				progressbarObj.setMessage("提交中...");
+				progressbarObj.show();
+				window.progressbarObj=progressbarObj;
+				var user_code=$("user_code").val();
+				var record_date=timeStamp2String();
+				var content=$("content").val();
+				var connect_date=$("connect_date").val();
+				var own=document.getElementById("own_depart");
+				var own_depart=own.options[own.selectedIndex].text;
+				var out=document.getElementById("out_depart");
+				var out_depart=out.options[out.selectedIndex].text;
+				var connect=document.getElementById("connect_way");
+				var connect_way=connect.options[connect.selectedIndex].text;
+				var nature=document.getElementById("connect_nature");
+				var connect_nature=nature.options[nature.selectedIndex].text;
+				if(content==""||own_depart==""||out_depart==""||connect_way==""||connect_nature==""){
+					alert("请选择或填写空白处");
+				}else{
+				data="user_code=" +user_code
+				   	  +"&record_date=" +record_date
+				   	  +"&content=" +content
+				   	  +"&connect_date=" +connect_date
+				   	  +"&own_depart=" +own_depart
+				   	  +"&out_depart=" +out_depart
+				   	  +"&connect_way=" +connect_way
+				   	  +"&connect_nature="+connect_nature
+				   	  +"&flag=" +"three";
+				$a.go("http://10.40.121.69:9999/outconnect/addServlet", "post", data, three_success, three_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+				}
+			}
+			function three_success(data){
+				progressbarObj.cancel();
+				var json = eval("("+data.responseText+")");
+				if(json[0].msgCode>=0){
+					alert("录入成功",callback001);
+				}else{
+					alert("录入失败");
+				}
+			}
+			function three_fail(data){
+				progressbarObj.cancel();
+				alert("服务器错误");
+			}
+			function callback001(){
+				//open("res:page/chaxun.uixml",false);
+				returnMainMenu();
+			}
+			function returnMainMenu() {
+				window.open("res:page/home.uixml?userName=" + userFullCode, false);
+			}
+		]]>
+		</script>
+	</head>
+	<header>
+		<titlebar id="titlebarid" title="洽谈内容记录"  hidericon="true"iconhref="returnMainMenu()" />
+	</header>
+	<body onload="oninit()">
+		<div id="hide">
+		</div>
+		<input type="hidden" id="user_code"></input>
+		<input type="hidden" id="record_date"></input>
+		<div id="gtxz" style="display: inline;width:30%;">沟通性质：</div>
+	    	<select id="connect_nature" style="width:70%" onchange="">
+            	<option value="connect_nature1">一般会谈</option>
+            	<option value="connect_nature2">专项会谈</option>
+         	</select>
+	    <br/>
+		<div id="djbh" style="display: inline;width:30%;">洽谈方式：</div>
+	    	<select id="connect_way" style="width:70%" onchange="">
+            	<option value="connect_way1">拜访</option>
+            	<option value="connect_way2">会谈</option>
+            	<option value="connect_way3">活动</option>
+            	<option value="connect_way4">电话</option>
+            	<option value="connect_way5">邮件</option>
+            	<option value="connect_way6">访问网站</option>
+         	</select>
+	    <br/>
+       	<div id="dN" style="display: inline;width:30%">总部单位：</div>
+       		<!--<input type="text" style="width:57%" hideborder="false"  id="own_departin" readonly="true"></input>-->
+          	<select id="own_depart" style="width:70%" onchange="">
+            	<!--<option value="GX001">公司办公室</option>
+            	<option value="GX002">规划发展部</option>
+            	<option value="GX003">运营管理部</option>-->
+         	</select>
+       	<br/>
+       	<div id="dC" style="display: inline;width:30%;">洽谈单位：</div>
+       		<!--<input type="text" style="width:57%" hideborder="false"  id="out_departin"ontextchanged=""></input>-->
+       		<select id="out_depart" style="width:70%" onchange="">
+            	<!--<option value="GX001">国资委</option>
+            	<option value="GX002">江夏区残联</option>
+            	<option value="GX003">区消防大队</option>-->
+         	</select>
+         <br/>
+         <div id="ddd" style="width:30%;">沟通日期：</div>
+         	<object type="date" id="connect_date" format="YYYY/MM/DD" name="" value="" style="width:70%"></object>
+        <br size="5px"/>
+        <div id="dd" style="width:30%;">洽谈内容：</div>
+        <br size="10px"/>
+		<textarea rows="5" id="content" style=""prompt=""></textarea>
+       	
+	</body>
+	<footer>
+          <input type="button" value="提        交" onclick="three()" style="width:60%;align:center;"></input>
+    </footer>
+	
+</html>

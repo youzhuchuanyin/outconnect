@@ -1,0 +1,191 @@
+<!-- ExMobi UIXML(XHTML)文件 -->
+<html>
+	<head>
+		<meta content="charset=utf-8"/>
+		<title show="false"/>
+		<link rel="stylesheet" type="text/css" href="res:css/global.css" />
+		<style type="text/css">
+			.pagebar {
+				background-image: url(res:image/list/pagebar.png);
+				text-valign: middle;
+				padding: 8 0;
+				color: #a0c8e8;
+				width: 90%;
+				align: center;
+			}
+			.pagebar-case {
+				width: 20%;
+				text-align: center;
+			}
+			.pagebar-icon {
+				width: 24;
+			}
+		</style>
+		<script src="res:script/exmobijs/app.js"/>
+<script src="res:script/exmobijs/base.js"/>
+<script src="res:script/exmobijs/utility.js"/>
+<script src="res:script/exmobijs/date.js"/>
+<script>
+	<![CDATA[
+		function init() {
+			var userName = window.getStringSession("userFullCode");
+			window.userName=userName;
+			var progressbarObj = new ProgressBar();
+			onqueryajaxinit();
+			window.progressbarObj=progressbarObj;
+			var datetime = new Date();
+			var year = datetime.getFullYear();  
+			var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+			var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+			window.year=year;
+			window.month=month;
+			window.date=date;
+			//$("main").html("");
+			//data="user_code=" +userName
+				  //+"&flag=" +"one";
+			//$a.go("http://10.40.121.69:9999/outconnect/addServlet", "post", data, one_success, one_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+			////$a.go("http://10.40.16.27:8080/outconnect/addServlet", "post", data, one_success, one_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+		}
+		function one(){
+			data="user_code=" +userName
+				  +"&flag=" +"one";
+			$a.go("http://10.40.121.69:9999/outconnect/addServlet", "post", data, one_success, one_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+		}
+		function one_success(data){
+			var json = eval("("+data.responseText+")");
+			var innerHtml="";
+			var linshi=json[0].own_depart;
+			window.linshi=linshi;
+			var startDate = document.getElementById("startDate").value;
+			var endDate = document.getElementById("endDate").value;
+			for(i=0;i<json.length;i++){
+				innerHtml +="<option  value='"+i+"'>"+json[i].own_depart+"</option>";
+				document.getElementById("own_depart").innerHTML=innerHtml;
+				
+			}
+		}
+		function one_fail(data){
+		}
+		function reSearch() {
+			var dialogObj = document.getElementById("dialogid");
+			dialogObj.show();
+			one();
+			document.getElementById("startDate").value = year + "/" + month + "/" + "01";
+			document.getElementById("endDate").value = year + "/" + month + "/" + date;
+		}
+		function returnMainMenu() {
+			window.open("res:page/home.uixml?userName="+userName, false);
+		}
+		function onqueryajaxinit(){
+			var startDate = window.getStringSession("startDate");
+			var endDate = window.getStringSession("endDate");
+			var own_depart = window.getStringSession("own_depart");
+			var connect_nature = window.getStringSession("connect_nature");
+			data="user_code=" +userName
+				 +"&startDate=" +startDate
+			     +"&endDate=" +endDate
+			     +"&own_depart=" +own_depart
+			     +"&connect_nature="+connect_nature
+				 +"&flag=" +"four";
+			$a.go("http://10.40.121.69:9999/outconnect/chaxunServlet", "post", data, four_success, four_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+			//$a.go("http://10.40.16.27:8080/outconnect/chaxunServlet", "post", data, four_success, four_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+		}
+		function onqueryajax(){
+			$("main").html("");
+			var startDate = document.getElementById("startDate").value;
+			window.setStringSession("startDate", startDate);
+			var endDate = document.getElementById("endDate").value;
+			window.setStringSession("endDate", endDate);
+			
+			var own = document.getElementById("own_depart");
+			var own_depart=own.options[own.selectedIndex].text;
+			window.setStringSession("own_depart", own_depart);
+			var nature = document.getElementById("connect_nature");
+			var connect_nature=nature.options[nature.selectedIndex].text;
+			window.setStringSession("connect_nature", connect_nature);
+			//alert(connect_nature);
+			progressbarObj.setMessage("获取中...");
+			progressbarObj.show();
+			data="user_code=" +userName
+				 +"&startDate=" +startDate
+			     +"&endDate=" +endDate
+			     +"&own_depart=" +own_depart
+			     +"&connect_nature="+connect_nature
+				 +"&flag=" +"four";
+			$a.go("http://10.40.121.69:9999/outconnect/chaxunServlet", "post", data, four_success, four_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+			//$a.go("http://10.40.16.27:8080/outconnect/chaxunServlet", "post", data, four_success, four_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+		}
+		function four_success(data){
+			progressbarObj.cancel();
+			var json = eval("("+data.responseText+")");
+			var innerHtml="";
+			for(i=0;i<json.length;i++){
+				var rcaption=json[i].connect_date+"   "+json[i].user_code;
+				innerHtml +="<listitem  type='twoline' sndcaption='" + json[i].out_depart + "'  href='' caption='" + json[i].own_depart + "' rcaption='" + rcaption + "'  class='imgnormal' href=\"javascript:open_detail('" + json[i].out_depart + "','"+json[i].own_depart +"','"+json[i].connect_date+"','"+json[i].user_code+"','"+json[i].connect_nature+"')\"/>";
+				document.getElementById("main").innerHTML=innerHtml;
+			}
+		}
+		function four_fail(data){
+			alert("服务器错误");
+		}
+		function open_detail(out_depart,own_depart,connect_date,user_code,connect_nature) {
+			var j = '{out_depart:"'+out_depart+'",own_depart:"'+own_depart+'",connect_date:"'+connect_date+'",user_code:"'+user_code+'",connect_nature:"'+connect_nature+'"}';//json对象转成字符串（有一个方法）这里是硬写的
+			var param=EncryptionUtil.base64Encode(j);
+			open("res:page/detail.uixml?j="+param);
+		}
+	]]>
+		</script>
+	</head>
+	<header>
+		<titlebar title="洽谈内容查询" iconhref="returnMainMenu()" ricon="res:image/list/search.png" riconhref="reSearch();" />
+	</header>
+	<body onload="init()">
+		<div id="id1">
+			<input type="hidden" value="" id="datestart" name=""></input>
+			<input type="hidden" value="" id="dateend" name=""></input>
+			<input type="hidden" value="" id="depart" name=""></input>
+			<input type="hidden" value="" id="nature1" name=""></input>
+		</div>
+		<div id="main">
+			<!--<listitem  type="twoline" sndcaption="洽谈单位"  caption="总部单位" rcaption="2018/08/08"   style='color:" + color +"' href="javascript:open_detail()"></listitem>-->
+		</div>
+	</body>
+	<dialogset>
+		<dialog id="dialogid" icon="res:img/dialogicon.png" title="请选择" oktext="确定" okhref="onqueryajax()" canceltext="取消">
+			开始日期：
+			<object type="date" id="startDate" format="YYYY/MM/DD"style="width:60%" ></object>
+			<br/>
+			结束日期：
+			<object type="date" id="endDate"   format="YYYY/MM/DD"style="width:60%" ></object>
+			<br/>
+			总部部门：
+			<select id="own_depart" style="width:60%" onchange="">
+         	</select>
+         	<br/>
+			沟通性质：
+			<select id="connect_nature" style="width:60%" onchange="">
+				<option value="connect_nature1">一般会谈</option>
+            	<option value="connect_nature2">专项会谈</option>
+         	</select>
+		</dialog>
+	</dialogset>
+	<footer>
+		<!--<div class="pagebar" style="width:100%">
+			<div class="pagebar-case" id="firstpage">
+				<img src="res:image/list/start.png" clicksrc="res:image/list/start_click.png" class="pagebar-icon" href=""/>
+			</div>
+			<div class="pagebar-case" id="pretpage">
+				<img src="res:image/list/prev.png" clicksrc="res:image/list/prev_click.png" class="pagebar-icon" href=""/>
+			</div>
+			<div class="pagebar-case" id="pagediv">
+				1/20
+			</div>
+			<div class="pagebar-case" id="nextpage">
+				<img src="res:image/list/next.png" clicksrc="res:image/list/next_click.png" class="pagebar-icon"  href="nextpage()"/>
+			</div>
+			<div class="pagebar-case" id="lastpage">
+				<img src="res:image/list/end.png" clicksrc="res:image/list/end_click.png" class="pagebar-icon" href="lastpage()"/>
+			</div>
+		</div>-->
+	</footer>
+</html>

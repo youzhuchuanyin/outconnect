@@ -1,0 +1,40 @@
+﻿<!-- ExMobi UIXML(XHTML)文件 -->
+<html>
+	<head>
+		<meta content="charset=utf-8"/>
+		<title show="false"/>
+		<link rel="stylesheet" type="text/css" href="res:css/global.css" />
+		<script src="res:script/exmobijs/app.js"/>
+		<script src="res:script/exmobijs/base.js"/>
+        <script src="res:script/exmobijs/utility.js"/>
+        <script src="res:script/exmobijs/date.js"/>
+<script>
+	<![CDATA[
+		var userFullCode = window.getNativeParameter("username");
+		//userFullCode="010100601155";
+		window.setStringSession("userFullCode", userFullCode);
+		function init(){
+		}
+		function backFun() {
+			var str = DeviceUtil.getOs();
+			if (str == "android") {
+				var script = "script:exitapp";
+				ClientUtil.execScript(script);
+			} else {
+				var script = "script:close";
+				ClientUtil.execScript(script);
+				   }
+		}		
+	]]>
+		</script>
+	</head>
+	<header>
+		<titlebar title="洽谈内容查询" iconhref="backFun()"icon="theme:image/icon/home.png" hidericon="true" />
+	</header>
+	<body>
+		<div id="main">
+			<listitem type="oneline" caption="洽谈内容记录" href="res:page/add.uixml" icon='res:image/list/add.png'></listitem>
+			<listitem type="oneline" caption="洽谈内容查询" href="res:page/chaxun.uixml" icon='res:image/list/form.png'></listitem>
+		</div>
+	</body>
+</html>

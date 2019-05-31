@@ -1,0 +1,86 @@
+<!-- ExMobi UIXML(XHTML)文件 -->
+<html>
+	<head>
+		<meta content="charset=utf-8"/>
+		<title show="false"/>
+		<link rel="stylesheet" type="text/css" href="res:css/global.css" />
+		<script src="res:script/exmobijs/app.js"/>
+		<script src="res:script/exmobijs/base.js"/>
+        <script src="res:script/exmobijs/utility.js"/>
+        <script src="res:script/exmobijs/date.js"/>
+<script>
+	<![CDATA[
+		var progressbarObj = new ProgressBar();
+		var userName = window.getStringSession("userFullCode");
+		function init() {
+			var param=window.getParameter("j");
+		    var j=EncryptionUtil.base64Decode(param);
+			var o=eval("("+j+")");
+			getDetail(o.out_depart,o.own_depart,o.connect_date,o.user_code,o.connect_nature);
+		}
+		function getDetail(out_depart,own_depart,connect_date,user_code,connect_nature) {
+			progressbarObj.setMessage("获取中...");
+			progressbarObj.show();
+			data="user_code=" +user_code
+				 +"&out_depart=" +out_depart
+			     +"&own_depart=" +own_depart
+			     +"&connect_date=" +connect_date
+			     +"&connect_nature=" +connect_nature
+				 +"&flag=" +"five";
+			$a.go("http://10.40.121.69:9999/outconnect/chaxunServlet", "post", data, five_success, five_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+			//$a.go("http://10.40.16.27:8080/outconnect/chaxunServlet", "post", data, five_success, five_fail, '{"Content-Type":"application/x-www-form-urlencoded; charset=utf-8","Accept-Language":"zh-cn"}', false);
+		}
+		function five_success(data) {
+			progressbarObj.cancel();
+			var json = eval("(" + data.responseText + ")");
+			$("connect_nature").rcaption=json[0].connect_nature;
+			$("connect_way").rcaption=json[0].connect_way;
+			$("own_depart").rcaption=json[0].own_depart;
+			$("out_depart").rcaption=json[0].out_depart;
+			$("content").val(json[0].content);
+			$("connect_date").rcaption=json[0].connect_date;
+			$("record_date").rcaption=json[0].record_date;
+			$("user_code").rcaption=json[0].user_code;
+			
+		}
+		function five_fail(data) {
+			progressbarObj.cancel();
+			alert("服务器异常，请求数据失败。");
+		}
+		function returnMainMenu() {
+			window.open("res:page/chaxun.uixml?userName=" + userName, false);
+		}
+	]]>
+		</script>
+	</head>
+	<header>
+		<titlebar id="titlebarid" title="详细信息" iconhref="script:close"  hidericon="true"  ></titlebar>
+		<!--<titlebar title="详细信息" iconhref="returnMainMenu()" hidericon="true"></titlebar>-->
+	</header>
+	<body onload="init()">
+	   <meta content="charset=UTF-8"/>
+	   <input type="hidden" id="username" name="username"  />
+	   <div id="maindiv">
+	   	   <listitem  type='oneline' icon=''  caption="沟通性质:" rcaption="" id="connect_nature"style='width:100%' />
+	       <br/>
+	       <listitem  type='oneline' icon=''  caption="洽谈方式:" rcaption="" id="connect_way"style='width:100%' />
+	       <br/>
+	       <listitem  type='oneline' icon=''  caption="总部单位:" rcaption="" id="own_depart"style='width:100%' />
+	       <br/>
+	       <listitem  type='oneline' icon=''  caption="洽谈单位:" rcaption="" id="out_depart"style='width:100%' />
+	       <br size="10px"/>
+	       <div id="dd" style="width:30%;">洽谈内容：</div>
+	       <br size="10px"/>
+	       <textarea rows="5" id="content" style="" readonly="true" prompt=""></textarea>
+	       <br/>
+	       <listitem  type='oneline' icon=''  caption="沟通日期" rcaption="" id="connect_date"style='width:100%' />
+	       <br/>
+	       <listitem  type='oneline' icon=''  caption="记录日期" rcaption="" id="record_date"style='width:100%' />
+	       <br/>
+	       <listitem  type='oneline' icon=''  caption="沟通人" rcaption="" id="user_code"style='width:100%' />
+	       <br/>
+       </div>
+	</body>
+	<footer>
+    </footer>
+</html>
